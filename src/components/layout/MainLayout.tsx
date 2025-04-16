@@ -9,10 +9,12 @@ import { useTheme } from 'next-themes';
 const MainLayout = () => {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false);
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
   useEffect(() => {
     setMounted(true);
+    // Force dark mode on the html element for consistency
+    document.documentElement.classList.add('dark');
   }, []);
 
   if (!mounted) {

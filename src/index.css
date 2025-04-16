@@ -15,12 +15,12 @@
     --popover-foreground: 222.2 84% 4.9%;
 
     /* Golf theme colors - forest green as primary */
-    --primary: 142 76% 36%;
+    --primary: 122 76% 39%; /* #4CAF50 */
     --primary-foreground: 0 0% 100%;
 
-    /* Sky blue as secondary */
-    --secondary: 199 89% 48%;
-    --secondary-foreground: 0 0% 100%;
+    /* Secondary mint */
+    --secondary: 132 56% 76%; /* #9EE7B2 */
+    --secondary-foreground: 0 0% 0%;
 
     /* Light green for muted elements */
     --muted: 140 33% 96%;
@@ -30,12 +30,12 @@
     --accent: 43 74% 66%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84.2% 68%; /* #FF5C5C */
+    --destructive-foreground: 0 0% 100%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 142 76% 36%;
+    --ring: 122 76% 39%; /* #4CAF50 */
 
     --radius: 0.5rem;
 
@@ -50,45 +50,46 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* TeeTribe Dark Mode Colors */
+    --background: 0 0% 6%; /* #0F0F0F */
+    --foreground: 0 0% 100%; /* #FFFFFF */
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 240 3% 12%; /* #1C1C1E */
+    --card-foreground: 0 0% 100%; /* #FFFFFF */
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 240 3% 12%; /* #1C1C1E */
+    --popover-foreground: 0 0% 100%; /* #FFFFFF */
 
-    /* Brighter green in dark mode */
-    --primary: 142 76% 45%;
+    /* Primary green */
+    --primary: 122 76% 39%; /* #4CAF50 */
     --primary-foreground: 0 0% 100%;
 
-    /* Brighter blue as secondary */
-    --secondary: 199 89% 55%;
-    --secondary-foreground: 0 0% 100%;
+    /* Secondary mint */
+    --secondary: 132 56% 76%; /* #9EE7B2 */
+    --secondary-foreground: 0 0% 10%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 240 3% 12%; /* #1C1C1E */
+    --muted-foreground: 0 0% 56%; /* #8E8E93 */
 
-    /* Warmer accent for dark mode */
-    --accent: 43 74% 60%;
-    --accent-foreground: 0 0% 100%;
+    /* Badge gold accent */
+    --accent: 51 100% 50%; /* #FFD700 */
+    --accent-foreground: 0 0% 10%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84.2% 68%; /* #FF5C5C */
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 142 76% 45%;
+    --border: 0 0% 16%; /* Slightly lighter than card bg */
+    --input: 0 0% 16%;
+    --ring: 122 76% 39%; /* #4CAF50 */
 
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-background: 0 0% 6%; /* #0F0F0F */
+    --sidebar-foreground: 0 0% 100%; /* #FFFFFF */
+    --sidebar-primary: 122 76% 39%; /* #4CAF50 */
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 132 56% 76%; /* #9EE7B2 */
+    --sidebar-accent-foreground: 0 0% 10%;
+    --sidebar-border: 0 0% 16%;
+    --sidebar-ring: 122 76% 39%; /* #4CAF50 */
   }
 }
 
@@ -99,5 +100,45 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* TeeTribe UI components */
+@layer components {
+  /* Card styles with rounded corners per TeeTribe style guide */
+  .teetribe-card {
+    @apply bg-card rounded-2xl border border-border shadow-sm;
+  }
+  
+  /* Badge styles */
+  .teetribe-badge {
+    @apply rounded-full px-2.5 py-0.5 text-xs font-semibold;
+  }
+  
+  /* Achievement badge */
+  .teetribe-achievement {
+    @apply bg-accent text-accent-foreground;
+  }
+
+  /* Button styles with specific rounded corners */
+  .teetribe-button {
+    @apply rounded-2xl transition-all duration-150;
+  }
+  
+  /* Profile avatars with mint border in dark mode */
+  .teetribe-avatar {
+    @apply rounded-full ring-2 ring-secondary shadow-md;
+  }
+}
+
+/* Transition effects */
+@layer utilities {
+  .transition-smooth {
+    @apply transition-all duration-150 ease-in-out;
+  }
+  
+  /* Glow effect for buttons on press */
+  .glow-on-press:active {
+    @apply shadow-lg shadow-primary/20;
   }
 }
