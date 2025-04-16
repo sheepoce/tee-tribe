@@ -2,6 +2,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Flag, MapPin, Users, User, BarChart3 } from 'lucide-react';
+import { ThemeToggle } from '@/components/theme/theme-toggle';
 
 const Navbar = () => {
   const location = useLocation();
@@ -15,7 +16,7 @@ const Navbar = () => {
   ];
 
   return (
-    <header className="border-b bg-white">
+    <header className="border-b bg-background">
       <div className="container flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-2">
           <Link to="/dashboard" className="flex items-center gap-2">
@@ -47,6 +48,7 @@ const Navbar = () => {
         </nav>
         
         <div className="ml-6 flex items-center gap-2">
+          <ThemeToggle />
           <Button variant="ghost" size="sm">
             <User className="h-4 w-4 mr-2" />
             Sign In
