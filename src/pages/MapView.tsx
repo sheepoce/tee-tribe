@@ -2,21 +2,37 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, Plus, Search } from 'lucide-react';
+import { MapPin, Plus, Filter, Search } from 'lucide-react';
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Map from '@/components/Map';
 
 const MapView = () => {
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
+  const [activeRegion, setActiveRegion] = useState<string>("all");
   
-  // Mock data for NZ courses
+  // Mock data for NZ courses with regions
   const newZealandGolfCourses = [
-    { id: 1, name: 'Auckland Golf Club', location: 'Auckland', played: true },
-    { id: 2, name: 'Gulf Harbour Country Club', location: 'Whangaparaoa', played: true },
-    { id: 3, name: 'Muriwai Golf Club', location: 'Muriwai', played: true },
-    { id: 4, name: 'Titirangi Golf Club', location: 'Titirangi', played: false },
-    { id: 5, name: 'Remuera Golf Club', location: 'Remuera', played: false },
+    { id: 1, name: 'Auckland Golf Club', location: 'Auckland', region: 'north', played: true },
+    { id: 2, name: 'Gulf Harbour Country Club', location: 'Whangaparaoa', region: 'north', played: true },
+    { id: 3, name: 'Muriwai Golf Club', location: 'Muriwai', region: 'north', played: true },
+    { id: 4, name: 'Titirangi Golf Club', location: 'Titirangi', region: 'north', played: false },
+    { id: 5, name: 'Remuera Golf Club', location: 'Remuera', region: 'north', played: false },
+    { id: 6, name: 'Christchurch Golf Club', location: 'Christchurch', region: 'south', played: false },
+    { id: 7, name: 'Millbrook Resort', location: 'Queenstown', region: 'south', played: true },
+    { id: 8, name: 'Paraparaumu Beach Golf Club', location: 'Paraparaumu', region: 'north', played: false },
+    { id: 9, name: 'Wairakei Golf Course', location: 'Taupo', region: 'north', played: false },
+    { id: 10, name: 'The Hills', location: 'Arrowtown', region: 'south', played: false },
   ];
+  
+  const filteredCourses = activeRegion === "all" 
+    ? newZealandGolfCourses 
+    : newZealandGolfCourses.filter(course => course.region === activeRegion);
+  
+  const regionCounts = {
+    north: newZealandGolfCourses.filter(c => c.region === 'north').length,
+    south: newZealandGolfCourses.filter(c => c.region === 'south').length,
+  };
   
   return (
     <div className="space-y-6">
@@ -33,9 +49,24 @@ const MapView = () => {
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 rounded-lg overflow-hidden border h-[500px] bg-dark-surface relative">
+          <Tabs value={activeRegion} onValueChange={setActiveRegion} className="absolute top-4 left-4 z-10">
+            <TabsList className="bg-card-surface border border-soft-grey/30">
+              <TabsTrigger value="all" className="data-[state=active]:bg-primary data-[state=active]:text-white">
+                All NZ
+              </TabsTrigger>
+              <TabsTrigger value="north" className="data-[state=active]:bg-primary data-[state=active]:text-white">
+                North Island
+              </TabsTrigger>
+              <TabsTrigger value="south" className="data-[state=active]:bg-primary data-[state=active]:text-white">
+                South Island
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          
           <Map 
-            courses={newZealandGolfCourses}
-            onCourseSelect={setSelectedCourse} 
+            courses={filteredCourses}
+            onCourseSelect={setSelectedCourse}
+            activeRegion={activeRegion}
           />
         </div>
         
@@ -46,7 +77,7 @@ const MapView = () => {
               <CardDescription className="text-soft-grey">TeeTribe's Launch Region</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
-              {newZealandGolfCourses.map((course) => (
+              {filteredCourses.map((course) => (
                 <div 
                   key={course.id}
                   className={`flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors ${
@@ -87,11 +118,11 @@ const MapView = () => {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">North Island</span>
-                  <span className="font-bold">186</span>
+                  <span className="font-bold">{regionCounts.north}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">South Island</span>
-                  <span className="font-bold">114</span>
+                  <span className="font-bold">{regionCounts.south}</span>
                 </div>
                 <div className="pt-2 mt-2 border-t border-soft-grey/30">
                   <Button variant="outline" className="w-full mt-2 rounded-2xl border-primary text-primary hover:text-white hover:bg-primary">
