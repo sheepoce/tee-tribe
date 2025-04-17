@@ -2,10 +2,11 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, Plus, Filter, Search } from 'lucide-react';
+import { MapPin, Plus, Filter, Search, ClipboardCheck, Route, UserCheck, Target } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Map from '@/components/Map';
+import { toast } from "@/components/ui/use-toast";
 
 const MapView = () => {
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
@@ -34,6 +35,31 @@ const MapView = () => {
     south: newZealandGolfCourses.filter(c => c.region === 'south').length,
   };
   
+  const handleSubmitRound = () => {
+    if (selectedCourse) {
+      toast({
+        title: "Round Submission Started",
+        description: `Starting a new round submission for ${selectedCourse}`,
+      });
+      // Navigate to round submission page or open modal
+      // This would be implemented based on the app's navigation structure
+    } else {
+      toast({
+        title: "No Course Selected",
+        description: "Please select a course first to submit a round",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  const handleTrackFriends = () => {
+    toast({
+      title: "Friend Tracking",
+      description: "Showing your friends' check-ins on the map",
+    });
+    // This would activate a filter to show friends' check-ins
+  };
+  
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -45,6 +71,26 @@ const MapView = () => {
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input placeholder="Search NZ courses..." className="pl-10 w-full sm:w-[250px]" />
         </div>
+      </div>
+      
+      {/* Action Buttons - Added for round submissions and tracking */}
+      <div className="flex flex-wrap gap-3">
+        <Button onClick={handleSubmitRound} className="bg-primary text-white gap-2">
+          <ClipboardCheck className="h-4 w-4" />
+          Submit Round
+        </Button>
+        <Button onClick={handleTrackFriends} variant="outline" className="border-secondary-mint text-secondary-mint hover:bg-secondary-mint/10 gap-2">
+          <UserCheck className="h-4 w-4" />
+          Track Friends
+        </Button>
+        <Button 
+          variant="outline" 
+          className="border-soft-grey text-soft-grey hover:bg-soft-grey/10 gap-2 ml-auto"
+          onClick={() => toast({ title: "Filters", description: "Course filtering options would appear here" })}
+        >
+          <Filter className="h-4 w-4" />
+          Filters
+        </Button>
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -62,6 +108,18 @@ const MapView = () => {
               </TabsTrigger>
             </TabsList>
           </Tabs>
+          
+          {/* Quick Action Floating Buttons */}
+          <div className="absolute bottom-4 right-4 z-10 flex flex-col gap-2">
+            <Button className="bg-primary rounded-full h-12 w-12 p-0 shadow-lg" 
+                   onClick={() => toast({ title: "Check In", description: "Check in at this location" })}>
+              <Target />
+            </Button>
+            <Button className="bg-secondary-mint rounded-full h-12 w-12 p-0 shadow-lg text-black"
+                   onClick={() => toast({ title: "Navigation", description: "Start navigation to selected course" })}>
+              <Route />
+            </Button>
+          </div>
           
           <Map 
             courses={filteredCourses}
@@ -125,7 +183,11 @@ const MapView = () => {
                   <span className="font-bold">{regionCounts.south}</span>
                 </div>
                 <div className="pt-2 mt-2 border-t border-soft-grey/30">
-                  <Button variant="outline" className="w-full mt-2 rounded-2xl border-primary text-primary hover:text-white hover:bg-primary">
+                  <Button 
+                    onClick={handleSubmitRound} 
+                    variant="outline" 
+                    className="w-full mt-2 rounded-2xl border-primary text-primary hover:text-white hover:bg-primary"
+                  >
                     Check in at NZ Course
                   </Button>
                 </div>

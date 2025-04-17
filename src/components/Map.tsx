@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -119,15 +120,7 @@ const Map = ({ courses, onCourseSelect, activeRegion = 'all' }: MapProps) => {
   };
 
   useEffect(() => {
-    // Load the Mapbox token from input if not already set
-    if (!mapboxToken && !map.current) {
-      const storedToken = localStorage.getItem('mapboxToken');
-      if (storedToken) {
-        
-      }
-    }
-
-    if (!mapContainer.current || !mapboxToken) return;
+    if (!mapContainer.current) return;
 
     // Initialize map if it doesn't exist
     if (!map.current) {
@@ -175,10 +168,6 @@ const Map = ({ courses, onCourseSelect, activeRegion = 'all' }: MapProps) => {
       updateMapBounds();
     }
   }, [courses, activeRegion]);
-
-  
-
-  
 
   return <div ref={mapContainer} className="h-full rounded-lg" />;
 };
