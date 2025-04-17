@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { toast } from "@/components/ui/use-toast";
 
 interface MapProps {
   courses: Array<{
@@ -13,6 +14,15 @@ interface MapProps {
   }>;
   onCourseSelect: (courseName: string) => void;
 }
+
+// Center coordinates for New Zealand
+const NZ_CENTER: [number, number] = [172.5, -41.0];
+const NZ_BOUNDS = {
+  north: -34.1,
+  south: -47.5,
+  west: 166.0,
+  east: 179.0
+};
 
 const Map = ({ courses, onCourseSelect }: MapProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -45,8 +55,12 @@ const Map = ({ courses, onCourseSelect }: MapProps) => {
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/dark-v11', // Dark theme for visual consistency
-      center: [174.7633, -41.2865] as [number, number], // Center on New Zealand, cast as tuple
-      zoom: 5
+      center: NZ_CENTER, // Center on New Zealand
+      zoom: 5,
+      maxBounds: [
+        [NZ_BOUNDS.west, NZ_BOUNDS.south], // Southwest coordinates
+        [NZ_BOUNDS.east, NZ_BOUNDS.north]  // Northeast coordinates
+      ]
     });
 
     // Add navigation controls
@@ -77,11 +91,17 @@ const Map = ({ courses, onCourseSelect }: MapProps) => {
 
         // Add marker to map
         new mapboxgl.Marker(el)
-          .setLngLat(coordinates) // This is now properly typed as [number, number]
+          .setLngLat(coordinates)
           .setPopup(popup)
           .addTo(map.current!);
       }
     });
+
+    // Fit map to New Zealand bounds when first loaded
+    map.current.fitBounds([
+      [NZ_BOUNDS.west, NZ_BOUNDS.south],
+      [NZ_BOUNDS.east, NZ_BOUNDS.north]
+    ], { padding: 50 });
 
     // Clean up on unmount
     return () => {
@@ -95,17 +115,39 @@ const Map = ({ courses, onCourseSelect }: MapProps) => {
     e.preventDefault();
     const input = e.currentTarget.elements.namedItem('mapboxToken') as HTMLInputElement;
     const token = input.value.trim();
-    if (token) {
-      localStorage.setItem('mapboxToken', token);
-      setMapboxToken(token);
+    
+    if (!token) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid Mapbox token",
+        variant: "destructive",
+      });
+      return;
     }
+    
+    // Validate token format (should start with 'pk.' for public tokens)
+    if (!token.startsWith('pk.')) {
+      toast({
+        title: "Warning",
+        description: "This appears to be a secret key. Please use a public token (pk.eyJ...)",
+        variant: "destructive",
+      });
+    }
+    
+    localStorage.setItem('mapboxToken', token);
+    setMapboxToken(token);
+    
+    toast({
+      title: "Success",
+      description: "Mapbox token saved successfully",
+    });
   };
 
   if (!mapboxToken) {
     return (
-      <div className="h-full flex flex-col items-center justify-center p-6 text-center">
+      <div className="h-full flex flex-col items-center justify-center p-6 text-center bg-dark-surface rounded-xl">
         <h3 className="text-lg font-bold mb-4">Mapbox API Token Required</h3>
-        <p className="mb-4 text-soft-grey">To view the map, please enter your Mapbox public token:</p>
+        <p className="mb-4 text-soft-grey">To view the TeeTribe Map of New Zealand's 300+ golf courses, please enter your Mapbox <strong>public</strong> token:</p>
         <form onSubmit={handleTokenSubmit} className="w-full max-w-md">
           <div className="flex gap-2">
             <input 
@@ -123,7 +165,7 @@ const Map = ({ courses, onCourseSelect }: MapProps) => {
             </button>
           </div>
           <p className="text-xs mt-2 text-soft-grey">
-            You can get a free token at <a href="https://mapbox.com/" target="_blank" rel="noopener noreferrer" className="text-primary">mapbox.com</a>
+            You can get a free token at <a href="https://mapbox.com/" target="_blank" rel="noopener noreferrer" className="text-primary">mapbox.com</a>. Use a <strong>public</strong> token (starts with pk.eyJ...)
           </p>
         </form>
       </div>
