@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -46,7 +45,7 @@ const Map = ({ courses, onCourseSelect, activeRegion = 'all' }: MapProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markers = useRef<mapboxgl.Marker[]>([]);
-  const [mapboxToken, setMapboxToken] = useState<string>('');
+  const [mapboxToken] = useState<string>('pk.eyJ1IjoiZnRyZXNpZGRlciIsImEiOiJjbTlrcXkzd2MwcG50MmtvZGlrMG4wcThyIn0.P62EMNTNt2icfIGN18VXfA');
 
   // Mock coordinates for the example courses (centered around New Zealand)
   const mockCoordinates: Record<string, [number, number]> = {
@@ -124,7 +123,7 @@ const Map = ({ courses, onCourseSelect, activeRegion = 'all' }: MapProps) => {
     if (!mapboxToken && !map.current) {
       const storedToken = localStorage.getItem('mapboxToken');
       if (storedToken) {
-        setMapboxToken(storedToken);
+        
       }
     }
 
@@ -177,70 +176,9 @@ const Map = ({ courses, onCourseSelect, activeRegion = 'all' }: MapProps) => {
     }
   }, [courses, activeRegion]);
 
-  const handleTokenSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const input = e.currentTarget.elements.namedItem('mapboxToken') as HTMLInputElement;
-    const token = input.value.trim();
-    
-    if (!token) {
-      toast({
-        title: "Error",
-        description: "Please enter a valid Mapbox token",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    // Validate token format (should start with 'pk.' for public tokens)
-    if (!token.startsWith('pk.')) {
-      toast({
-        title: "Warning",
-        description: "This appears to be a secret key. Please use a public token (pk.eyJ...)",
-        variant: "destructive",
-      });
-    }
-    
-    localStorage.setItem('mapboxToken', token);
-    setMapboxToken(token);
-    
-    toast({
-      title: "Success",
-      description: "Mapbox token saved successfully",
-    });
-  };
+  
 
-  if (!mapboxToken) {
-    return (
-      <div className="h-full flex flex-col items-center justify-center p-6 text-center bg-dark-surface rounded-xl">
-        <h3 className="text-lg font-bold mb-4">Mapbox API Token Required</h3>
-        <p className="mb-4 text-soft-grey">To view the TeeTribe Map of New Zealand's 300+ golf courses, please enter your Mapbox <strong>public</strong> token:</p>
-        <form onSubmit={handleTokenSubmit} className="w-full max-w-md">
-          <div className="flex gap-2">
-            <input 
-              type="text" 
-              name="mapboxToken"
-              placeholder="pk.eyJ1..." 
-              className="flex-1 rounded-2xl p-2 bg-card-surface border border-soft-grey"
-              required
-            />
-            <button 
-              type="submit" 
-              className="bg-primary rounded-2xl px-4 py-2 text-white"
-            >
-              Set Token
-            </button>
-          </div>
-          <p className="text-xs mt-2 text-soft-grey">
-            You can get a free token at <a href="https://mapbox.com/" target="_blank" rel="noopener noreferrer" className="text-primary">mapbox.com</a>. Use a <strong>public</strong> token (starts with pk.eyJ...)
-          </p>
-          <div className="mt-4 p-3 bg-alert-red/10 border border-alert-red rounded-md text-sm">
-            <p className="text-white font-medium">⚠️ Security Warning</p>
-            <p className="text-soft-grey mt-1">The token you provided is a secret key (starts with sk). Please rotate this key in your Mapbox account and use a public token instead.</p>
-          </div>
-        </form>
-      </div>
-    );
-  }
+  
 
   return <div ref={mapContainer} className="h-full rounded-lg" />;
 };
