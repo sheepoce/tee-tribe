@@ -9,7 +9,7 @@ interface MapProps {
     name: string;
     location: string;
     played: boolean;
-    coordinates?: [number, number];
+    coordinates?: [number, number]; // Updated to use tuple type
   }>;
   onCourseSelect: (courseName: string) => void;
 }
@@ -20,7 +20,7 @@ const Map = ({ courses, onCourseSelect }: MapProps) => {
   const [mapboxToken, setMapboxToken] = useState<string>('');
 
   // Mock coordinates for the example courses (centered around New Zealand)
-  const mockCoordinates = {
+  const mockCoordinates: Record<string, [number, number]> = { // Explicitly type as tuple
     'Auckland Golf Club': [174.7633, -36.8485],
     'Gulf Harbour Country Club': [174.7633, -36.9],
     'Muriwai Golf Club': [174.4891, -36.8304],
@@ -45,7 +45,7 @@ const Map = ({ courses, onCourseSelect }: MapProps) => {
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/dark-v11', // Dark theme for visual consistency
-      center: [174.7633, -41.2865], // Center on New Zealand
+      center: [174.7633, -41.2865] as [number, number], // Center on New Zealand, cast as tuple
       zoom: 5
     });
 
@@ -77,7 +77,7 @@ const Map = ({ courses, onCourseSelect }: MapProps) => {
 
         // Add marker to map
         new mapboxgl.Marker(el)
-          .setLngLat(coordinates)
+          .setLngLat(coordinates) // This is now properly typed as [number, number]
           .setPopup(popup)
           .addTo(map.current!);
       }
