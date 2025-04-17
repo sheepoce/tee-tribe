@@ -4,12 +4,10 @@ import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import BottomNav from './BottomNav';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useTheme } from 'next-themes';
 
 const MainLayout = () => {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false);
-  const { resolvedTheme } = useTheme();
 
   useEffect(() => {
     setMounted(true);
