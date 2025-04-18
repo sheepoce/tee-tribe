@@ -1,11 +1,17 @@
+
 // components/CourseSearch.tsx
 import { useState, useEffect } from 'react';
-import { FlatList, TextInput, View, Text, TouchableOpacity } from 'react-native';
-import { supabase } from '../lib/supabase'; // adjust path
+import { supabase } from '@/integrations/supabase/client';
+import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
+import { Search, MapPin } from 'lucide-react';
+import type { Database } from '@/integrations/supabase/types';
 
-export default function CourseSearch({ onSelect }: { onSelect: (course: any) => void }) {
+type Course = Database['public']['Tables']['courses']['Row'];
+
+export default function CourseSearch({ onSelect }: { onSelect: (course: Course) => void }) {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState<Course[]>([]);
 
   useEffect(() => {
     const search = async () => {
@@ -15,30 +21,44 @@ export default function CourseSearch({ onSelect }: { onSelect: (course: any) => 
         .select('*')
         .ilike('name', `%${query}%`)
         .limit(10);
-      if (!error) setResults(data);
+      
+      if (!error && data) setResults(data);
     };
+    
     const timeout = setTimeout(search, 300); // debounce
     return () => clearTimeout(timeout);
   }, [query]);
 
   return (
-    <View className="bg-black p-2 rounded">
-      <TextInput
-        className="text-white bg-[#1c1c1e] p-2 rounded"
-        placeholder="Search courses..."
-        placeholderTextColor="#888"
-        value={query}
-        onChangeText={setQuery}
-      />
-      <FlatList
-        data={results}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => onSelect(item)}>
-            <Text className="text-white py-1">{item.name} - {item.region}</Text>
-          </TouchableOpacity>
-        )}
-      />
-    </View>
+    <div className="bg-dark-surface p-2 rounded-xl">
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-soft-grey" />
+        <Input
+          className="pl-10 bg-card-surface text-white"
+          placeholder="Search courses..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+      </div>
+      
+      {results.length > 0 && (
+        <Card className="mt-2 max-h-60 overflow-y-auto bg-card-surface border-soft-grey/30">
+          <ul className="py-2">
+            {results.map((item) => (
+              <li key={item.id}>
+                <button
+                  onClick={() => onSelect(item)}
+                  className="w-full px-4 py-2 text-left hover:bg-dark-surface flex items-center gap-2 text-white"
+                >
+                  <MapPin className="h-4 w-4 text-primary" />
+                  <span>{item.name}</span>
+                  {item.region && <span className="text-soft-grey text-xs ml-auto">{item.region}</span>}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
+    </div>
   );
 }
