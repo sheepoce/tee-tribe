@@ -1,73 +1,171 @@
-# Welcome to your Lovable project
 
-## Project info
+# 🏌️‍♂️ TeeTribe - Golf Course Tracking Application
 
-**URL**: https://lovable.dev/projects/cdf68454-1112-430a-8fcf-ef788b359a07
+TeeTribe is a modern web application that helps golfers find courses, track rounds, and connect with other players.
 
-## How can I edit this code?
+![TeeTribe Preview](https://via.placeholder.com/800x400?text=TeeTribe+Preview)
 
-There are several ways of editing your application.
+## 🚀 Technologies
 
-**Use Lovable**
+- **Frontend**: React 18 with TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS with custom TeeTribe theme
+- **UI Components**: shadcn/ui
+- **Routing**: React Router
+- **State Management**: TanStack React Query
+- **Maps**: Mapbox GL
+- **Backend**: Supabase (Authentication, Database, Storage)
+- **Icons**: Lucide React
+- **Charts**: Recharts
+- **Date Handling**: date-fns
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/cdf68454-1112-430a-8fcf-ef788b359a07) and start prompting.
+## 🏗️ Project Structure
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+/src
+  /components         # Reusable UI components
+    /ui               # Base UI components (shadcn/ui)
+    /layout           # Layout components (Navbar, BottomNav, etc.)
+    /theme            # Theme-related components
+  /hooks              # Custom React hooks
+  /integrations       # External service integrations
+    /supabase         # Supabase client and types
+  /lib                # Utility functions and helpers
+  /pages              # Page components
+  /public             # Static assets
 ```
 
-**Edit a file directly in GitHub**
+## 📋 Features
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- **Course Search**: Find golf courses with autocomplete search
+- **Interactive Map**: View courses on an interactive map with filtering
+- **Round Logging**: Track golf rounds and performance
+- **User Profiles**: Manage golfer profiles and statistics
+- **Friends System**: Connect with other golfers
+- **Dark Mode**: Optimized dark UI for outdoor visibility
 
-**Use GitHub Codespaces**
+## 🔧 Setup & Development
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Prerequisites
 
-## What technologies are used for this project?
+- Node.js 18+ and npm/yarn
+- Supabase account
 
-This project is built with:
+### Local Development
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd teetribe
+   ```
 
-## How can I deploy this project?
+2. Install dependencies:
+   ```bash
+   npm install
+   # or 
+   yarn
+   ```
 
-Simply open [Lovable](https://lovable.dev/projects/cdf68454-1112-430a-8fcf-ef788b359a07) and click on Share -> Publish.
+3. Start the development server:
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
 
-## Can I connect a custom domain to my Lovable project?
+4. Open [http://localhost:8080](http://localhost:8080) to view the app.
 
-Yes, you can!
+## 🗄️ Database Schema
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Courses Table
+- `id`: text (primary key)
+- `name`: text (required)
+- `address`: text
+- `region`: text
+- `lat`: double precision
+- `lng`: double precision
+- `holes`: smallint
+- `country`: text
+- `created_at`: timestamp
+- `source_id`: text
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## 🔌 API Integration
+
+The application integrates with a Golf Course API to import and update course data. This is handled through a Supabase Edge Function (`import-courses`).
+
+## 🎨 UI Style Guide
+
+TeeTribe uses a dark-themed UI optimized for outdoor visibility with the following color palette:
+
+- **Primary Green**: `#4CAF50` - Accents, CTA buttons, badges
+- **Secondary Mint**: `#9EE7B2` - Highlights, avatars, tag elements
+- **Dark Surface**: `#0F0F0F` - App background
+- **Card Surface**: `#1C1C1E` - Cards, modals, content containers
+- **Soft Grey**: `#8E8E93` - Secondary text, dividers
+- **White**: `#FFFFFF` - Primary text
+- **Alert Red**: `#FF5C5C` - Errors, warnings, destructive actions
+- **Badge Gold**: `#FFD700` - Milestone/achievement indicators
+
+## 📦 Dependencies
+
+### Core
+- `react`: ^18.3.1
+- `react-dom`: ^18.3.1
+- `react-router-dom`: ^6.26.2
+- `@tanstack/react-query`: ^5.56.2
+
+### UI & Styling
+- `tailwind-merge`: ^2.5.2
+- `tailwindcss-animate`: ^1.0.7
+- `class-variance-authority`: ^0.7.1
+- `clsx`: ^2.1.1
+- `lucide-react`: ^0.462.0
+
+### Maps & Visualization
+- `mapbox-gl`: ^3.11.0
+- `recharts`: ^2.12.7
+
+### Data & Forms
+- `@supabase/supabase-js`: ^2.49.4
+- `react-hook-form`: ^7.53.0
+- `@hookform/resolvers`: ^3.9.0
+- `zod`: ^3.23.8
+
+### Date & Time
+- `date-fns`: ^3.6.0
+
+### UI Components
+- Various Radix UI components (@radix-ui/*)
+
+## 🔐 Environment Variables
+
+The application uses the following environment variables:
+
+- Supabase URL and API keys (managed through the Supabase integration)
+- Mapbox access token (for map functionality)
+
+## 🧪 Testing
+
+(Add information about testing when implemented)
+
+## 🚀 Deployment
+
+The application can be deployed via Lovable's built-in deployment system:
+
+1. Open the project in Lovable
+2. Click on "Share" -> "Publish"
+3. Follow the prompts to deploy the application
+
+For custom domain configuration, navigate to Project > Settings > Domains in Lovable.
+
+## 📚 Contributing
+
+1. Fork the repository
+2. Create your feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add some amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+## 📄 License
+
+(Add license information as appropriate)
