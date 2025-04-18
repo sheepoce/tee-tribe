@@ -7,33 +7,36 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Map from '@/components/Map';
 import { toast } from "@/components/ui/use-toast";
 import { CourseSelectionDialog } from '@/components/courses/CourseSelectionDialog';
+import { useCourses } from '../hooks/useCourses';
+import { Spinner } from '../components/ui';
+import type { Tables } from '../integrations/supabase/types';
+
+type Course = Tables<'courses'>;
 
 const MapView = () => {
-  const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [activeRegion, setActiveRegion] = useState<string>("all");
   const [isCourseDialogOpen, setIsCourseDialogOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   
-  // Mock data for NZ courses with regions
-  const newZealandGolfCourses = [
-    { id: 1, name: 'Auckland Golf Club', location: 'Auckland', region: 'north', played: true },
-    { id: 2, name: 'Gulf Harbour Country Club', location: 'Whangaparaoa', region: 'north', played: true },
-    { id: 3, name: 'Muriwai Golf Club', location: 'Muriwai', region: 'north', played: true },
-    { id: 4, name: 'Titirangi Golf Club', location: 'Titirangi', region: 'north', played: false },
-    { id: 5, name: 'Remuera Golf Club', location: 'Remuera', region: 'north', played: false },
-    { id: 6, name: 'Christchurch Golf Club', location: 'Christchurch', region: 'south', played: false },
-    { id: 7, name: 'Millbrook Resort', location: 'Queenstown', region: 'south', played: true },
-    { id: 8, name: 'Paraparaumu Beach Golf Club', location: 'Paraparaumu', region: 'north', played: false },
-    { id: 9, name: 'Wairakei Golf Course', location: 'Taupo', region: 'north', played: false },
-    { id: 10, name: 'The Hills', location: 'Arrowtown', region: 'south', played: false },
-  ];
+  const { data: courses, isLoading, error } = useCourses();
   
-  const filteredCourses = activeRegion === "all" 
-    ? newZealandGolfCourses 
-    : newZealandGolfCourses.filter(course => course.region === activeRegion);
+  if (isLoading) return <Spinner />;
+  if (error) return <p>Error loading courses: {error.message}</p>;
+
+  const filteredByRegion = activeRegion === "all" 
+    ? courses 
+    : courses.filter(course => course.region === activeRegion);
+
+  const filteredCourses = searchQuery === ''
+    ? filteredByRegion
+    : filteredByRegion.filter(course => 
+        course.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
   
   const regionCounts = {
-    north: newZealandGolfCourses.filter(c => c.region === 'north').length,
-    south: newZealandGolfCourses.filter(c => c.region === 'south').length,
+    north: courses.filter(c => c.region === 'north').length,
+    south: courses.filter(c => c.region === 'south').length,
   };
   
   const handleSubmitRound = () => {
@@ -46,6 +49,14 @@ const MapView = () => {
       description: "Showing your friends' check-ins on the map",
     });
   };
+
+  const handleCourseSelect = (courseName: string) => {
+    const course = courses.find(c => c.name === courseName);
+    if (course) {
+      setSelectedCourse(course);
+      setSearchQuery('');
+    }
+  };
   
   return (
     <>
@@ -57,7 +68,29 @@ const MapView = () => {
           </div>
           <div className="relative w-full sm:w-auto">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Search NZ courses..." className="pl-10 w-full sm:w-[250px]" />
+            <Input 
+              placeholder="Search NZ courses..." 
+              className="pl-10 w-full sm:w-[250px]" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {searchQuery.length > 0 && (
+              <Card className="absolute w-full mt-1 max-h-60 overflow-y-auto z-50">
+                <ul className="py-2">
+                  {filteredCourses.slice(0, 10).map((course) => (
+                    <li key={course.id}>
+                      <button
+                        className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2"
+                        onClick={() => handleCourseSelect(course.name)}
+                      >
+                        <MapPin className="h-4 w-4 text-primary" />
+                        <span>{course.name}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+            )}
           </div>
         </div>
         
@@ -115,8 +148,15 @@ const MapView = () => {
             </div>
             
             <Map 
-              courses={filteredCourses}
-              onCourseSelect={setSelectedCourse}
+              courses={filteredCourses.map(course => ({
+                id: parseInt(course.id),
+                name: course.name,
+                location: course.address || '',
+                region: course.region || 'Other',
+                played: false,
+                coordinates: course.lat && course.lng ? [course.lng, course.lat] : undefined
+              }))}
+              onCourseSelect={handleCourseSelect}
               activeRegion={activeRegion}
             />
           </div>
@@ -132,20 +172,20 @@ const MapView = () => {
                   <div 
                     key={course.id}
                     className={`flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors ${
-                      selectedCourse === course.name ? 'bg-primary/10' : 'hover:bg-dark-surface'
+                      selectedCourse?.id === course.id ? 'bg-primary/10' : 'hover:bg-dark-surface'
                     }`}
-                    onClick={() => setSelectedCourse(course.name)}
+                    onClick={() => handleCourseSelect(course.name)}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`p-1.5 rounded-full ${course.played ? 'bg-primary/20' : 'bg-soft-grey/20'}`}>
-                        <MapPin className={`h-4 w-4 ${course.played ? 'text-primary' : 'text-soft-grey'}`} />
+                      <div className={`p-1.5 rounded-full ${false ? 'bg-primary/20' : 'bg-soft-grey/20'}`}>
+                        <MapPin className={`h-4 w-4 ${false ? 'text-primary' : 'text-soft-grey'}`} />
                       </div>
                       <div>
                         <div className="font-medium">{course.name}</div>
-                        <div className="text-xs text-soft-grey">{course.location}</div>
+                        <div className="text-xs text-soft-grey">{course.address}</div>
                       </div>
                     </div>
-                    {!course.played && (
+                    {!false && (
                       <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                         <Plus className="h-4 w-4" />
                         <span className="sr-only">Add to played</span>
@@ -165,7 +205,7 @@ const MapView = () => {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Total NZ Courses</span>
-                    <span className="font-bold">300+</span>
+                    <span className="font-bold">{courses.length}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">North Island</span>
