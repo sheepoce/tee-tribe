@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,7 @@ import Map from '@/components/Map';
 import { toast } from "@/components/ui/use-toast";
 import { CourseSelectionDialog } from '@/components/courses/CourseSelectionDialog';
 import { useCourses } from '../hooks/useCourses';
-import { Spinner } from '../components/ui';
+import { Spinner } from '@/components/ui';
 import type { Tables } from '../integrations/supabase/types';
 
 type Course = Tables<'courses'>;
